@@ -15,7 +15,7 @@ public class Contacts : NativeModule {
 	{
 		if (_instance != null) return;
 		_instance = this;
-		Resource.SetGlobalKey(_instance, "Contacts");
+		Uno.UX.Resource.SetGlobalKey(_instance, "Contacts");
 		
 		AddMember(new NativePromise<string, string>("authorize", Authorize, null));
 		AddMember(new NativeFunction("getAll", (NativeCallback)GetAll));
