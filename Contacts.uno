@@ -26,16 +26,15 @@ public class Contacts : NativeModule {
 
 	public Contacts()
 	{
-		if (_instance != null) return;
+		//if (_instance != null) return;
 		_instance = this;
 		Uno.UX.Resource.SetGlobalKey(_instance, "Contacts");
 		 _resultEvent = new NativeEvent("onResult");
         AddMember(_resultEvent);
-		AddMember(new NativePromise<string, string>("authorize", Authorize, null));
 		AddMember(new NativeFunction("getAll", (NativeCallback)GetAll));
 		AddMember(new NativeFunction("getPage", (NativeCallback)GetPage));
-		AddMember(new NativeFunction("AskContactPermission", (NativeCallback)AskContactPermission));
-		AddMember(new NativeFunction("CheckContactsPermissionIsGranted", (NativeCallback)CheckContactsPermissionIsGranted));
+		AddMember(new NativeFunction("askContactPermission", (NativeCallback)AskContactPermission));
+		AddMember(new NativeFunction("checkContactsPermissionIsGranted", (NativeCallback)CheckContactsPermissionIsGranted));
 	}
 
 	object GetAll (Context c, object[] args)
@@ -101,6 +100,7 @@ public class Contacts : NativeModule {
         else 
         {
             debug_log "Permission.uno::Permission required only on Android";
+            _resultEvent.RaiseAsync("AuthorizationDenied");
         }
         return null;
     }

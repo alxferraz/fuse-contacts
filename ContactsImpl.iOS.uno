@@ -59,7 +59,7 @@ public extern(iOS) class ContactsImpl
 			id<UnoObject> row = @{ForeignList:Of(ret).NewDictRow():Call()};
 		    ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
 		    // https://developer.apple.com/library/ios/documentation/AddressBook/Reference/ABRecordRef_iPhoneOS/
-		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"firstName", CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty)))};
+		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"name", CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty)))};
 		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"lastName", CFBridgingRelease(ABRecordCopyValue(person, kABPersonLastNameProperty)))};
 		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"organization", CFBridgingRelease(ABRecordCopyValue(person, kABPersonOrganizationProperty)))};
 
