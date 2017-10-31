@@ -146,11 +146,11 @@ public extern(Android) class ContactsImpl
 
 	public static Future<string> AuthorizeImpl()
 	{
-		if (_authorizePromise == null)
-		{
+		//if (_authorizePromise == null)
+		//{
 			_authorizePromise = new Promise<string>();
 			Permissions.Request(Permissions.Android.READ_CONTACTS).Then(AuthorizeResolved, AuthorizeRejected);
-		}
+		//}
 		return _authorizePromise;
 	}
 
