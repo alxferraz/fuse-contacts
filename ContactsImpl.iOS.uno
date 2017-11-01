@@ -58,8 +58,13 @@ public extern(iOS) class ContactsImpl
 		{
 			id<UnoObject> row = @{ForeignList:Of(ret).NewDictRow():Call()};
 		    ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
+		    NSString *firstName = (__bridge NSString *) ABRecordCopyValue(person, kABPersonFirstNameProperty); //get a person name
+            NSString* lastName  = (__bridge NSString *) ABRecordCopyValue(person, kABPersonLastNameProperty);
+
+		    NSString* fullName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+
 		    // https://developer.apple.com/library/ios/documentation/AddressBook/Reference/ABRecordRef_iPhoneOS/
-		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"name", CFBridgingRelease(ABRecordCopyValue(person, kABPersonFirstNameProperty)))};
+		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"name", fullName)};
 		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"lastName", CFBridgingRelease(ABRecordCopyValue(person, kABPersonLastNameProperty)))};
 		    @{ForeignDict:Of(row).SetKeyVal(string,string):Call(@"organization", CFBridgingRelease(ABRecordCopyValue(person, kABPersonOrganizationProperty)))};
 
