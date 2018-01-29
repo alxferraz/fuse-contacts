@@ -19,18 +19,18 @@ using Fuse.Controls.Native.Android;
 
 
 [UXGlobalModule]
-public class Contacts : NativeModule {
+public class Contacts : NativeEventEmitterModule {
 
 	static readonly Contacts _instance;
-	NativeEvent _resultEvent;
 
-	public Contacts()
+	public Contacts() : base(false,"result")
 	{
 		//if (_instance != null) return;
 		_instance = this;
 		Uno.UX.Resource.SetGlobalKey(_instance, "Contacts");
-		 _resultEvent = new NativeEvent("onResult");
-        AddMember(_resultEvent);
+		var onResult = new NativeEvent("onResult");
+		On("result", onResult);
+        AddMember(onResult);
 		AddMember(new NativeFunction("getAll", (NativeCallback)GetAll));
 		AddMember(new NativeFunction("getPage", (NativeCallback)GetPage));
 		AddMember(new NativeFunction("askContactPermission", (NativeCallback)AskContactPermission));
@@ -81,7 +81,7 @@ public class Contacts : NativeModule {
             }
             else 
             {
-            	_resultEvent.RaiseAsync("AuthorizationAuthorized");
+                Emit("result", "AuthorizationAuthorized");
             }
         }
         else if defined(iOS) {
@@ -91,16 +91,16 @@ public class Contacts : NativeModule {
 				RequestAuthorizationiniOS();
 			}
 			else if (status == "AuthorizationAuthorized") {
-				_resultEvent.RaiseAsync("AuthorizationAuthorized");
+			    Emit("result", "AuthorizationAuthorized");
 			}
 			else if (status == "AuthorizationDenied") {
-				_resultEvent.RaiseAsync("AuthorizationDenied");
+			    Emit("result", "AuthorizationDenied");
 			}
         }     
         else 
         {
             debug_log "Permission.uno::Permission required only on Android";
-            _resultEvent.RaiseAsync("AuthorizationDenied");
+            Emit("result", "AuthorizationDenied");
         }
         return null;
     }
@@ -137,18 +137,18 @@ public class Contacts : NativeModule {
     extern(Android) void Execute(PlatformPermission grantedPermissions)
     {
     	debug_log "AskContactPermission 3";
-         _resultEvent.RaiseAsync("AuthorizationAuthorized");
+    	Emit("result", "AuthorizationAuthorized");
     }
 
     extern(Android) void Reject(Exception e)
     {
     	debug_log "AskContactPermission 4";
-        _resultEvent.RaiseAsync("AuthorizationRejected");
+    	Emit("result", "AuthorizationRejected");
     }
 
     void resultCb( string str )
     {
-        _resultEvent.RaiseAsync(str);
+        Emit("result", str);
     }
 
     [Foreign(Language.ObjC)]
