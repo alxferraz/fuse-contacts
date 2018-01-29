@@ -81,7 +81,7 @@ public class Contacts : NativeModule {
             }
             else 
             {
-            	_resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationAuthorized");
+            	_resultEvent.RaiseAsync("AuthorizationAuthorized");
             }
         }
         else if defined(iOS) {
@@ -91,16 +91,16 @@ public class Contacts : NativeModule {
 				RequestAuthorizationiniOS();
 			}
 			else if (status == "AuthorizationAuthorized") {
-				_resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationAuthorized");
+				_resultEvent.RaiseAsync("AuthorizationAuthorized");
 			}
 			else if (status == "AuthorizationDenied") {
-				_resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationDenied");
+				_resultEvent.RaiseAsync("AuthorizationDenied");
 			}
         }     
         else 
         {
             debug_log "Permission.uno::Permission required only on Android";
-            _resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationDenied");
+            _resultEvent.RaiseAsync("AuthorizationDenied");
         }
         return null;
     }
@@ -137,18 +137,18 @@ public class Contacts : NativeModule {
     extern(Android) void Execute(PlatformPermission grantedPermissions)
     {
     	debug_log "AskContactPermission 3";
-         _resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationAuthorized");
+         _resultEvent.RaiseAsync("AuthorizationAuthorized");
     }
 
     extern(Android) void Reject(Exception e)
     {
     	debug_log "AskContactPermission 4";
-        _resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationRejected");
+        _resultEvent.RaiseAsync("AuthorizationRejected");
     }
 
     void resultCb( string str )
     {
-        _resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, str);
+        _resultEvent.RaiseAsync(str);
     }
 
     [Foreign(Language.ObjC)]
