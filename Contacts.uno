@@ -15,8 +15,6 @@ using Fuse.Controls.Native.Android;
 
 [extern(iOS) Require("Xcode.Framework", "AddressBook")]
 [extern(iOS) Require("Source.Import","AddressBook/AddressBook.h")]
-[extern(iOS) Require("Xcode.Plist.Element", "<key>NSContactsUsageDescription</key> <string>We need contacts.</string>")]
-
 
 [UXGlobalModule]
 public class Contacts : NativeModule {
