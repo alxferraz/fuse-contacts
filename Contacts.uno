@@ -68,18 +68,15 @@ public class Contacts : NativeModule {
 
 	object AskContactPermission(Context c, object[] args)
     {
-    	debug_log "AskContactPermission";
         if defined(Android)
         {
-        	debug_log "AskContactPermission 1";
             if (!CheckContactsPermissionGranted()) {
-            	debug_log "AskContactPermission 2";
             	var permissionPromise = Permissions.Request(Permissions.Android.READ_CONTACTS);
             	permissionPromise.Then(Execute, Reject);
             }
             else 
             {
-            	_resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationAuthorized");
+            	_resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationAuthorized");
             }
         }
         else if defined(iOS) {
@@ -89,16 +86,15 @@ public class Contacts : NativeModule {
 				RequestAuthorizationiniOS();
 			}
 			else if (status == "AuthorizationAuthorized") {
-				_resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationAuthorized");
+				_resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationAuthorized");
 			}
 			else if (status == "AuthorizationDenied") {
-				_resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationDenied");
+				_resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationDenied");
 			}
         }     
         else 
         {
-            debug_log "Permission.uno::Permission required only on Android";
-            _resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationDenied");
+            _resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationDenied");
         }
         return null;
     }
@@ -134,19 +130,17 @@ public class Contacts : NativeModule {
 
     extern(Android) void Execute(PlatformPermission grantedPermissions)
     {
-    	debug_log "AskContactPermission 3";
-         _resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationAuthorized");
+         _resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationAuthorized");
     }
 
     extern(Android) void Reject(Exception e)
     {
-    	debug_log "AskContactPermission 4";
-        _resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, "AuthorizationRejected");
+        _resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationRejected");
     }
 
     void resultCb( string str )
     {
-        _resultEvent.RaiseAsync(_resultEvent.Context.ThreadWorker, str);
+        _resultEvent.RaiseAsync(_resultEvent.ThreadWorker, str);
     }
 
     [Foreign(Language.ObjC)]
@@ -177,7 +171,6 @@ public class Contacts : NativeModule {
 		CFErrorRef error = NULL;
 		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
 		if (!addressBook) {
-		    NSLog(@"ABAddressBookCreateWithOptions error: %@", CFBridgingRelease(error));
 		    NSString* deviceModel = @"Error getting addressBook";
 		    @{Contacts:Of(_this).resultCb(string):Call(@"Error getting addressBook")};
 		    return;
@@ -185,7 +178,6 @@ public class Contacts : NativeModule {
 
 		ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
 		    if (error) {
-		        NSLog(@"ABAddressBookRequestAccessWithCompletion error: %@", CFBridgingRelease(error));
 		        @{Contacts:Of(_this).resultCb(string):Call(@"Error getting access")};
 		    }
 		    if (granted) {
