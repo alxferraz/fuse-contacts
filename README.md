@@ -11,7 +11,7 @@ Issues, feature request and pull request are welcomed.
 
 Using [fusepm](https://github.com/bolav/fusepm)
 
-    $ fusepm install https://github.com/bolav/fuse-contacts
+    $ fusepm install https://github.com/LIFEAI/fuse-contacts
 
 
 ## Usage:
