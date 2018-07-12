@@ -11,29 +11,42 @@ using Fuse.Controls.Native.Android;
 
 [ForeignInclude(Language.Java, "android.content.pm.PackageManager")]
 [ForeignInclude(Language.Java, "android.support.v4.app.ActivityCompat")]
+[ForeignInclude(Language.Java, "android.util.Log")]
 [ForeignInclude(Language.Java, "com.fuse.Activity")]
 
 [extern(iOS) Require("Xcode.Framework", "AddressBook")]
 [extern(iOS) Require("Source.Import","AddressBook/AddressBook.h")]
+[extern(iOS) Require("Source.Import","ContactsUI/ContactsUI.h")]
 
 [UXGlobalModule]
 public class Contacts : NativeModule {
 
 	static readonly Contacts _instance;
-	NativeEvent _resultEvent;
+	public static NativeEvent _contactChosen;
+	public static NativeEvent _multipleContactChosen;
+	public static NativeEvent _resultEvent;
 
 	public Contacts()
 	{
 		//if (_instance != null) return;
 		_instance = this;
 		Uno.UX.Resource.SetGlobalKey(_instance, "Contacts");
-		 _resultEvent = new NativeEvent("onResult");
-        AddMember(_resultEvent);
 		AddMember(new NativeFunction("getAll", (NativeCallback)GetAll));
 		AddMember(new NativeFunction("getPage", (NativeCallback)GetPage));
+		AddMember(new NativeFunction("pickContact",(NativeCallback)PickContact));
+		AddMember(new NativeFunction("pickMultipleContact",(NativeCallback)PickMultipleContact));
 		AddMember(new NativeFunction("askContactPermission", (NativeCallback)AskContactPermission));
 		AddMember(new NativeFunction("checkContactsPermissionIsGranted", (NativeCallback)CheckContactsPermissionIsGranted));
+		_contactChosen = new NativeEvent("onContactChosen");
+		AddMember(_contactChosen);
+
+		_multipleContactChosen = new NativeEvent("onMultipleContactChosen");
+		AddMember(_multipleContactChosen);
+
+		_resultEvent=new NativeEvent("onResult");
+		AddMember(_resultEvent);
 	}
+
 
 	object GetAll (Context c, object[] args)
 	{
@@ -49,6 +62,18 @@ public class Contacts : NativeModule {
 		return a.GetScriptingArray();
 	}
 
+	string PickContact (Context c,object[] args)
+ 	{
+ 		 ContactsImpl.PickContactImpl();
+		 return "";
+ 	}
+
+	string PickMultipleContact (Context c,object[] args)
+ 	{
+ 		 ContactsImpl.PickMultipleContactImpl();
+		 return "";
+ 	}
+
 	Future<string> Authorize (object[] args)
 	{
 		return ContactsImpl.AuthorizeImpl();
@@ -61,7 +86,7 @@ public class Contacts : NativeModule {
 		//if (_authorizePromise == null)
 		//{
 			_authorizePromise = new Promise<string>();
-			
+
 		//}
 		return _authorizePromise;
 	}
@@ -74,13 +99,13 @@ public class Contacts : NativeModule {
             	var permissionPromise = Permissions.Request(Permissions.Android.READ_CONTACTS);
             	permissionPromise.Then(Execute, Reject);
             }
-            else 
+            else
             {
             	_resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationAuthorized");
             }
         }
         else if defined(iOS) {
-        	
+
         	var status = GetAuthorizationStatusiOS();
 			if (status == "AuthorizationNotDetermined") {
 				RequestAuthorizationiniOS();
@@ -91,8 +116,8 @@ public class Contacts : NativeModule {
 			else if (status == "AuthorizationDenied") {
 				_resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationDenied");
 			}
-        }     
-        else 
+        }
+        else
         {
             _resultEvent.RaiseAsync(_resultEvent.ThreadWorker, "AuthorizationDenied");
         }
@@ -113,8 +138,8 @@ public class Contacts : NativeModule {
 			else  {
 				return false;
 			}
-        }     
-        else 
+        }
+        else
         {
             debug_log "Permission.uno::Permission required only on Android";
         }
@@ -166,7 +191,7 @@ public class Contacts : NativeModule {
 	@}
 
     [Foreign(Language.ObjC)]
-	extern(iOS) void RequestAuthorizationiniOS() 
+	extern(iOS) void RequestAuthorizationiniOS()
 	@{
 		CFErrorRef error = NULL;
 		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
@@ -188,7 +213,6 @@ public class Contacts : NativeModule {
 		    CFRelease(addressBook);
 		});
 	@}
-	
+
 
 }
-

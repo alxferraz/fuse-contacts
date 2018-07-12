@@ -5,8 +5,10 @@ using Uno.Compiler.ExportTargetInterop;
 using Uno.Threading;
 
 [Require("Source.Import","AddressBook/AddressBook.h")]
+[Require("Source.Import","ContactsUI/ContactsUI.h")]
 [Require("Source.Include", "@{ForeignDict:Include}")]
 [Require("Xcode.Framework", "AddressBook")]
+[Require("Xcode.Framework", "ContactsUI")]
 public extern(iOS) class ContactsImpl
 {
 	public static Future<string> AuthorizeImpl()
@@ -46,7 +48,7 @@ public extern(iOS) class ContactsImpl
 
 	// http://stackoverflow.com/questions/3747844/get-a-list-of-all-contacts-on-ios
 	[Foreign(Language.ObjC)]
-	public static void GetAllImpl(ForeignList ret) 
+	public static void GetAllImpl(ForeignList ret)
 	@{
 		CFErrorRef error = NULL;
 		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
@@ -96,10 +98,19 @@ public extern(iOS) class ContactsImpl
 
 		}
 		CFRelease(allPeople);
-	@} 
+	@}
+
+	// [Foreign(Language.ObjC)]
+	// public static void PickContactImpl()
+	// @{
+	//
+	// 	CNContactPickerViewController *contactPicker = [[CNContactPickerViewController alloc] init];
+	// 	contactPicker.delegate = self;
+  //   //contactPicker.displayedPropertyKeys = @[CNContactGivenNameKey];
+	// @}
 
 	[Foreign(Language.ObjC)]
-	public static void GetPageImpl(ForeignList ret, int numRows, int curPage) 
+	public static void GetPageImpl(ForeignList ret, int numRows, int curPage)
 	@{
 		CFErrorRef error = NULL;
 		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
@@ -112,7 +123,7 @@ public extern(iOS) class ContactsImpl
 
 		while ( i < j )
 		{
-			i++; 
+			i++;
 			if (i >= nPeople) break;
 			id<UnoObject> row = @{ForeignList:Of(ret).NewDictRow():Call()};
 		    ABRecordRef person = CFArrayGetValueAtIndex( allPeople, i );
@@ -154,7 +165,7 @@ public extern(iOS) class ContactsImpl
 
 		}
 		CFRelease(allPeople);
-	@} 
+	@}
 }
 
 [Require("Source.Import","AddressBook/AddressBook.h")]
@@ -169,7 +180,7 @@ public extern(iOS) class AuthorizationClosure {
 	}
 
 	[Foreign(Language.ObjC)]
-	public void RequestAuthorization() 
+	public void RequestAuthorization()
 	@{
 		CFErrorRef error = NULL;
 		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);

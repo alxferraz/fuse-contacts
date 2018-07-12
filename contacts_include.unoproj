@@ -3,7 +3,8 @@
   "Packages": [
     "Fuse",
     "FuseJS",
-    "Uno.Permissions"
+    "Uno.Permissions",
+    "Android.ActivityUtils"
   ],
   "Includes": [
     "./*.uno"
