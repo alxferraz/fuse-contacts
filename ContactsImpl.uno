@@ -14,11 +14,11 @@ public extern(!Mobile) class ContactsImpl
 		debug_log("Contacts only working on mobile");
 	}
 
-	public static void PickContactImpl(JSList ret) {
+	public static void PickContactImpl() {
 		debug_log("Contacts only working on mobile");
 	}
 
-	public static void PickMultipleContactImpl(JSList ret) {
+	public static void PickMultipleContactImpl() {
 		debug_log("Contacts only working on mobile");
 	}
 
