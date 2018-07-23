@@ -114,8 +114,10 @@ public extern(iOS) class ContactsImpl
 	@{
 		CFErrorRef error = NULL;
 		ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, &error);
-		ABRecordRef source = ABAddressBookCopyDefaultSource(addressBook);
-		CFArrayRef allPeople = ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook, source, kABPersonSortByFirstName);
+		// CFArrayRef allSources = ABAddressBookCopyArrayOfAllSources(addressBook);
+		//
+		// ABRecordRef source = ABAddressBookCopyDefaultSource(addressBook);
+		CFArrayRef allPeople = ABAddressBookCopyArrayOfAllSources(addressBook);
 		CFIndex nPeople = CFArrayGetCount(allPeople);
 
 		int i = curPage * numRows;
