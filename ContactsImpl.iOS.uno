@@ -100,14 +100,17 @@ public extern(iOS) class ContactsImpl
 		CFRelease(allPeople);
 	@}
 
-	// [Foreign(Language.ObjC)]
-	// public static void PickContactImpl()
-	// @{
-	//
-	// 	CNContactPickerViewController *contactPicker = [[CNContactPickerViewController alloc] init];
-	// 	contactPicker.delegate = self;
-  //   //contactPicker.displayedPropertyKeys = @[CNContactGivenNameKey];
-	// @}
+	[Foreign(Language.ObjC)]
+	public static void PickContactImpl()
+	@{
+
+	@}
+
+	[Foreign(Language.ObjC)]
+	public static void PickMultipleContactImpl()
+	@{
+
+	@}
 
 	[Foreign(Language.ObjC)]
 	public static void GetPageImpl(ForeignList ret, int numRows, int curPage)
