@@ -29,12 +29,19 @@ using Fuse.Resources;
                 "java.util.List",
                 "java.util.ArrayList",
                 "java.util.Arrays",
-                "com.wafflecopter.multicontactpicker.MultiContactPicker",
-                "com.wafflecopter.multicontactpicker.ContactResult"
+                "java.io.Serializable",
+                "com.onegravity.contactpicker.ContactElement",
+                "com.onegravity.contactpicker.contact.Contact",
+                "com.onegravity.contactpicker.contact.ContactDescription",
+                "com.onegravity.contactpicker.contact.ContactSortOrder",
+                "com.onegravity.contactpicker.core.ContactPickerActivity",
+                "com.onegravity.contactpicker.group.Group",
+                "com.onegravity.contactpicker.picture.ContactPictureType"
+
                 )]
 [Require("Gradle.Repository", "maven { url 'https://jitpack.io' }")]
 [Require("Gradle.Repository", "maven { url 'https://maven.google.com' }")]
-[Require("Gradle.Dependency.Compile", "com.github.alxferraz:MultiContactPicker:v1.9.1")]
+[Require("Gradle.Dependency.Compile", "com.1gravity:android-contactpicker:1.3.2")]
 
 public extern(Android) class ContactsImpl
 {
@@ -170,8 +177,13 @@ public extern(Android) class ContactsImpl
   	static extern(android) Java.Object makeContactIntent()
   	@{
         try {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
+          Activity a = com.fuse.Activity.getRootActivity();
+          Intent intent = new Intent(a, ContactPickerActivity.class)
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_BADGE_TYPE, ContactPictureType.ROUND.name())
+            .putExtra(ContactPickerActivity.EXTRA_SHOW_CHECK_ALL, true)
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION, ContactDescription.ADDRESS.name())
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_SORT_ORDER, ContactSortOrder.AUTOMATIC.name());
         Log.i("testando","intent created - aqui");
         return intent;
       }catch (Exception ex) {
@@ -212,29 +224,65 @@ public extern(Android) class ContactsImpl
        Activity a = com.fuse.Activity.getRootActivity();
        Intent res = (Intent) intent;
 
-       try{
-         List<ContactResult> results = MultiContactPicker.obtainResult(res);
-         List<String> contacts = new ArrayList<String>();
-         JSONArray json = new JSONArray();
+       JSONArray json = new JSONArray();
 
-         for(int i = 0; i < results.size(); i++){
-              JSONObject contactJson = new JSONObject();
-              String contactName = results.get(i).getDisplayName();
-              contactJson.put("name",contactName);
-              JSONArray numbersJson = new JSONArray();
-              List<String> numbersArray = results.get(i).getPhoneNumbers();
-              for(int y=0; y<numbersArray.size(); y++){
-                numbersJson.put(numbersArray.get(y));
-              }
-              contactJson.put("phone_number",numbersJson);
-              json.put(contactJson);
-         }
 
-         @{multipleContactResult(string):Call(json.toString())};
+       if (res != null && res.hasExtra(ContactPickerActivity.RESULT_CONTACT_DATA)) {
 
-       }catch(Exception ex) {
+       // we got a result from the contact picker
 
-   		}
+       // process contacts
+       List<Contact> contacts = (List<Contact>) res.getSerializableExtra(ContactPickerActivity.RESULT_CONTACT_DATA);
+       for (Contact contact : contacts) {
+         try{
+                JSONObject contactJson = new JSONObject();
+                String contactName = contact.getDisplayName();
+                contactJson.put("name",contactName);
+                JSONArray numbersJson = new JSONArray();
+                String homeNumber = contact.getPhone(1);
+                String customNumber = contact.getPhone(0);
+                String workNumber = contact.getPhone(2);
+                String otherNumber = contact.getPhone(3);
+
+               numbersJson.put(homeNumber);
+               numbersJson.put(customNumber);
+               numbersJson.put(workNumber);
+               numbersJson.put(otherNumber);
+               contactJson.put("phone_number",numbersJson);
+               json.put(contactJson);
+             }catch (Exception e) {
+
+             }
+       }
+
+        @{multipleContactResult(string):Call(json.toString())};
+
+       // process groups
+       List<Group> groups = (List<Group>) res.getSerializableExtra(ContactPickerActivity.RESULT_GROUP_DATA);
+       for (Group group : groups) {
+           // process the groups...
+       }
+   }
+
+       // try{
+       //   List<ContactResult> results ;
+       //   List<String> contacts = new ArrayList<String>();
+       //   JSONArray json = new JSONArray();
+       //
+       //   for(int i = 0; i < results.size(); i++){
+       //        JSONObject contactJson = new JSONObject();
+       //        String contactName = results.get(i).getDisplayName();
+       //        contactJson.put("name",contactName);
+       //        JSONArray numbersJson = new JSONArray();
+       //        List<String> numbersArray = results.get(i).getPhoneNumbers();
+       //        for(int y=0; y<numbersArray.size(); y++){
+       //          numbersJson.put(numbersArray.get(y));
+       //        }
+       //        contactJson.put("phone_number",numbersJson);
+       //        json.put(contactJson);
+       //   }
+       //
+         //@{multipleContactResult(string):Call(json.toString())};
 
      @}
 
@@ -280,13 +328,19 @@ public extern(Android) class ContactsImpl
   [Foreign(Language.Java)]
   public static Java.Object makeMultipleContactsIntent()@{
         try {
-        Activity a = com.fuse.Activity.getRootActivity();
-        Intent intent=new MultiContactPicker.Builder(a).setCompletionText("Adicionar").setSelectionText(" ").setTitleText("Selecione os convidados").MultiContactPickerIntent();
+          Activity a = com.fuse.Activity.getRootActivity();
+          Intent intent = new Intent(a, ContactPickerActivity.class)
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_BADGE_TYPE, ContactPictureType.ROUND.name())
+            .putExtra(ContactPickerActivity.EXTRA_SHOW_CHECK_ALL, true)
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION, ContactDescription.ADDRESS.name())
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_SORT_ORDER, ContactSortOrder.AUTOMATIC.name());
         Log.i("testando","intent created - aqui");
         return intent;
       }catch (Exception ex) {
         return null;
       }
+
 
   @}
 
