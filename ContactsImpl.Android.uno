@@ -41,7 +41,7 @@ using Fuse.Resources;
                 )]
 [Require("Gradle.Repository", "maven { url 'https://jitpack.io' }")]
 [Require("Gradle.Repository", "maven { url 'https://maven.google.com' }")]
-[Require("Gradle.Dependency.Compile", "com.1gravity:android-contactpicker:1.3.2")]
+[Require("Gradle.Dependency.Compile", "com.github.alxferraz:Android-ContactPicker:b1485e3671ba14713c47de603d1399322e0bd107")]
 
 public extern(Android) class ContactsImpl
 {
@@ -331,9 +331,10 @@ public extern(Android) class ContactsImpl
           Activity a = com.fuse.Activity.getRootActivity();
           Intent intent = new Intent(a, ContactPickerActivity.class)
             .putExtra(ContactPickerActivity.EXTRA_CONTACT_BADGE_TYPE, ContactPictureType.ROUND.name())
-            .putExtra(ContactPickerActivity.EXTRA_SHOW_CHECK_ALL, true)
+            .putExtra(ContactPickerActivity.EXTRA_SHOW_CHECK_ALL, false)
+            .putExtra(ContactPickerActivity.EXTRA_ONLY_CONTACTS_WITH_PHONE, true)
             .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION, ContactDescription.ADDRESS.name())
-            .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+            .putExtra(ContactPickerActivity.EXTRA_CONTACT_DESCRIPTION_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
             .putExtra(ContactPickerActivity.EXTRA_CONTACT_SORT_ORDER, ContactSortOrder.AUTOMATIC.name());
         Log.i("testando","intent created - aqui");
         return intent;
