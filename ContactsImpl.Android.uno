@@ -41,7 +41,7 @@ using Fuse.Resources;
                 )]
 [Require("Gradle.Repository", "maven { url 'https://jitpack.io' }")]
 [Require("Gradle.Repository", "maven { url 'https://maven.google.com' }")]
-[Require("Gradle.Dependency.Compile", "com.github.alxferraz:Android-ContactPicker:b1485e3671ba14713c47de603d1399322e0bd107")]
+[Require("Gradle.Dependency.Compile", "com.github.alxferraz:Android-ContactPicker:a9f30c597f59216b0eaa5aacc05e161275aadac1")]
 
 public extern(Android) class ContactsImpl
 {
