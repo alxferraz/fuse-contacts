@@ -243,11 +243,26 @@ public extern(Android) class ContactsImpl
                 String customNumber = contact.getPhone(0);
                 String workNumber = contact.getPhone(2);
                 String otherNumber = contact.getPhone(3);
+              if(homeNumber!=""){
+                String s = homeNumber.replaceAll("[\\D]","");
+                numbersJson.put(s);
+              }
+              if(customNumber!=""){
+                String s = customNumber.replaceAll("[\\D]","");
+                numbersJson.put(s);
+              }
 
-               numbersJson.put(homeNumber);
-               numbersJson.put(customNumber);
-               numbersJson.put(workNumber);
-               numbersJson.put(otherNumber);
+              if(workNumber!=""){
+                String s = workNumber.replaceAll("[\\D]","");
+                numbersJson.put(s);
+              }
+
+              if(otherNumber!=""){
+                String s = otherNumber.replaceAll("[\\D]","");
+                numbersJson.put(s);
+
+              }
+
                contactJson.put("phone_number",numbersJson);
                json.put(contactJson);
              }catch (Exception e) {
